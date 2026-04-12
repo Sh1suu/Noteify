@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F2F2F7">
+
+    <!-- App Bar with Back -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        app:title="Create Note"
+        app:titleTextColor="#000000"
+        app:navigationIcon="@drawable/ic_back" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create Note"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Title"
+                    android:textColor="#333333"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/etNoteTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="#F2F2F7"
+                    android:hint="Enter note title"
+                    android:textColorHint="#AAAAAA"
+                    android:textColor="#000000"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="16sp" />
+
+                <!-- Subject -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Subject"
+                    android:textColor="#333333"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp" />
+
+                <Spinner
+                    android:id="@+id/spinnerSubject"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="#F2F2F7"
+                    android:paddingHorizontal="16dp" />
+
+                <!-- Content -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Content"
+                    android:textColor="#333333"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp" />
+
+                <EditText
+                    android:id="@+id/etNoteContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="#F2F2F7"
+                    android:hint="Start typing your notes here...."
+                    android:textColorHint="#AAAAAA"
+                    android:textColor="#000000"
+                    android:padding="16dp"
+                    android:textSize="16sp"
+                    android:gravity="top"
+                    android:inputType="textMultiLine" />
+
+                <!-- Mark as Important -->
+                <CheckBox
+                    android:id="@+id/cbImportant"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Mark as important"
+                    android:textColor="#333333"
+                    android:buttonTint="#9b51e0" />
+
+                <!-- Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="24dp">
+
+                    <Button
+                        android:id="@+id/btnCancel"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="Cancel"
+                        android:textAllCaps="false"
+                        android:textColor="#333333"
+                        android:background="#F2F2F7"
+                        app:backgroundTint="@null" />
+
+                    <Button
+                        android:id="@+id/btnSaveNote"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="Save Note"
+                        android:textColor="#FFFFFF"
+                        android:textAllCaps="false"
+                        android:background="#9b51e0"
+                        app:backgroundTint="@null" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </ScrollView>
+
+    <!-- Bottom Nav -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:id="@+id/btnNavNotes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📚" android:textSize="20sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Notes" android:textColor="#888888" android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnNavHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="#9b51e0">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏠" android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnNavProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👤" android:textSize="20sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Profile" android:textColor="#888888" android:textSize="11sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

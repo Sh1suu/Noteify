@@ -13,13 +13,18 @@
         android:theme="@style/Theme.Noteify"
         tools:targetApi="31">
 
-        <activity android:name=".LoginActivity"/>
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".CreateNoteActivity" />
+        <activity android:name=".NotesActivity" />
+        <activity android:name=".DashboardActivity" />
+        <activity android:name=".RegistrationActivity" />
+        <activity android:name=".LoginActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
