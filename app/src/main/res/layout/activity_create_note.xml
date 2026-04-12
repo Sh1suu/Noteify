@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:background="#F2F2F7">
 
-    <!-- App Bar with Back -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -45,7 +44,6 @@
                     android:textColor="#000000"
                     android:layout_marginBottom="24dp" />
 
-                <!-- Title -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -66,7 +64,6 @@
                     android:paddingHorizontal="16dp"
                     android:textSize="16sp" />
 
-                <!-- Subject -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -84,7 +81,6 @@
                     android:background="#F2F2F7"
                     android:paddingHorizontal="16dp" />
 
-                <!-- Content -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -108,7 +104,6 @@
                     android:gravity="top"
                     android:inputType="textMultiLine" />
 
-                <!-- Mark as Important -->
                 <CheckBox
                     android:id="@+id/cbImportant"
                     android:layout_width="match_parent"
@@ -118,7 +113,6 @@
                     android:textColor="#333333"
                     android:buttonTint="#9b51e0" />
 
-                <!-- Buttons -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -154,46 +148,6 @@
         </androidx.cardview.widget.CardView>
     </ScrollView>
 
-    <!-- Bottom Nav -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:background="#FFFFFF"
-        android:elevation="8dp">
-
-        <LinearLayout
-            android:id="@+id/btnNavNotes"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📚" android:textSize="20sp" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Notes" android:textColor="#888888" android:textSize="11sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnNavHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:background="#9b51e0">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏠" android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnNavProfile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👤" android:textSize="20sp" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Profile" android:textColor="#888888" android:textSize="11sp" />
-        </LinearLayout>
-    </LinearLayout>
+    <include layout="@layout/bottom_nav_bar" />
 
 </LinearLayout>
