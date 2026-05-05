@@ -1,6 +1,5 @@
-package edu.cit.gaviola.noteify
+package edu.cit.gaviola.noteify.auth.register
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -8,7 +7,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import edu.cit.gaviola.noteify.viewmodel.UserViewModel
+import edu.cit.gaviola.noteify.R
+import edu.cit.gaviola.noteify.auth.viewmodel.UserViewModel
+import edu.cit.gaviola.noteify.core.extensions.showToast
 
 class RegistrationActivity : AppCompatActivity() {
 
@@ -23,17 +24,15 @@ class RegistrationActivity : AppCompatActivity() {
         val btnCreateAccount = findViewById<Button>(R.id.btnCreateAccount)
         val tvSignIn = findViewById<TextView>(R.id.tvSignIn)
 
-        // Observe register result
         userViewModel.registerResult.observe(this) { success ->
             if (success) {
-                Toast.makeText(this, "Account created successfully!", Toast.LENGTH_SHORT).show()
-                finish() // Go back to login
+                showToast("Account created successfully!")
+                finish()
             }
         }
 
-        // Observe error messages
         userViewModel.errorMessage.observe(this) { message ->
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            showToast(message)
         }
 
         btnCreateAccount.setOnClickListener {
@@ -43,20 +42,18 @@ class RegistrationActivity : AppCompatActivity() {
             val confirmPassword = findViewById<EditText>(R.id.etConfirmPassword).text.toString().trim()
 
             if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                showToast("Please fill in all fields")
                 return@setOnClickListener
             }
 
             if (password != confirmPassword) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                showToast("Passwords do not match")
                 return@setOnClickListener
             }
 
             userViewModel.register(fullName, email, password)
         }
 
-        tvSignIn.setOnClickListener {
-            finish()
-        }
+        tvSignIn.setOnClickListener { finish() }
     }
 }

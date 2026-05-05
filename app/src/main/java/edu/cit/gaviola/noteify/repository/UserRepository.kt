@@ -1,7 +1,4 @@
-package edu.cit.gaviola.noteify.repository
-
-import edu.cit.gaviola.noteify.database.UserDao
-import edu.cit.gaviola.noteify.database.UserEntity
+package edu.cit.gaviola.noteify.auth.data
 
 class UserRepository(private val userDao: UserDao) {
 
@@ -9,7 +6,7 @@ class UserRepository(private val userDao: UserDao) {
         return try {
             val existingUser = userDao.getUserByEmail(email)
             if (existingUser != null) {
-                false // email already exists
+                false
             } else {
                 userDao.insertUser(
                     UserEntity(

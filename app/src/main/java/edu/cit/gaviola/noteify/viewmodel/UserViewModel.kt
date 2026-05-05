@@ -1,18 +1,19 @@
-package edu.cit.gaviola.noteify.viewmodel
+package edu.cit.gaviola.noteify.auth.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import edu.cit.gaviola.noteify.auth.data.UserEntity
+import edu.cit.gaviola.noteify.auth.data.UserRepository
 import edu.cit.gaviola.noteify.database.AppDatabase
-import edu.cit.gaviola.noteify.database.UserEntity
-import edu.cit.gaviola.noteify.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: UserRepository
+
     private val _loginResult = MutableLiveData<UserEntity?>()
     val loginResult: LiveData<UserEntity?> = _loginResult
 

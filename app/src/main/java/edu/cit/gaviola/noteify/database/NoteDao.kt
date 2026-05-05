@@ -1,4 +1,4 @@
-package edu.cit.gaviola.noteify.database
+package edu.cit.gaviola.noteify.notes.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

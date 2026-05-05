@@ -1,8 +1,9 @@
-package edu.cit.gaviola.noteify
+package edu.cit.gaviola.noteify.settings
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import edu.cit.gaviola.noteify.R
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

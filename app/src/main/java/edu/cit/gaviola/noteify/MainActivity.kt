@@ -1,59 +1,99 @@
-package edu.cit.gaviola.noteify
+package edu.cit.gaviola.noteify.auth.login
 
-import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import edu.cit.gaviola.noteify.viewmodel.UserViewModel
+import edu.cit.gaviola.noteify.R
+import edu.cit.gaviola.noteify.auth.data.UserEntity
+import edu.cit.gaviola.noteify.auth.data.UserRepository
+import edu.cit.gaviola.noteify.auth.register.RegistrationActivity
+import edu.cit.gaviola.noteify.core.extensions.navigateTo
+import edu.cit.gaviola.noteify.core.extensions.showToast
+import edu.cit.gaviola.noteify.dashboard.DashboardActivity
+import edu.cit.gaviola.noteify.database.AppDatabase
 
-class MainActivity : AppCompatActivity() {
+/**
+ * Login screen — MVP View implementation.
+ *
+ * This Activity is intentionally "dumb":
+ *  - It only renders state that the Presenter pushes to it.
+ *  - It delegates ALL decisions (validation, navigation logic) to [LoginPresenter].
+ *  - It does NOT contain any if/else business logic.
+ */
+class MainActivity : AppCompatActivity(), LoginContract.View {
 
-    private lateinit var userViewModel: UserViewModel
+    private lateinit var presenter: LoginContract.Presenter
+
+    private lateinit var etEmail: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var btnSignIn: Button
+    private lateinit var tvCreateAccount: TextView
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_login)
 
-        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+        // Wire up views
+        etEmail = findViewById(R.id.etEmail)
+        etPassword = findViewById(R.id.etPassword)
+        btnSignIn = findViewById(R.id.btnSignIn)
+        tvCreateAccount = findViewById(R.id.tvCreateAccount)
 
-        val btnSignIn = findViewById<Button>(R.id.btnSignIn)
-        val tvCreateAccount = findViewById<TextView>(R.id.tvCreateAccount)
+        // ProgressBar is added programmatically so we don't need to touch the XML layout.
+        // If you add one to the XML, reference it here instead.
+        progressBar = ProgressBar(this).also { it.visibility = View.GONE }
 
-        // Observe login result
-        userViewModel.loginResult.observe(this) { user ->
-            if (user != null) {
-                val intent = Intent(this, DashboardActivity::class.java)
-                intent.putExtra("USER_NAME", user.fullName)
-                intent.putExtra("USER_EMAIL", user.email)
-                startActivity(intent)
-            }
-        }
-
-        // Observe error messages
-        userViewModel.errorMessage.observe(this) { message ->
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        }
+        // Build the Presenter — inject the repository (acting as our Model layer)
+        val db = AppDatabase.getDatabase(application)
+        val repository = UserRepository(db.userDao())
+        presenter = LoginPresenter(this, repository)
 
         btnSignIn.setOnClickListener {
-            val email = findViewById<EditText>(R.id.etEmail).text.toString().trim()
-            val password = findViewById<EditText>(R.id.etPassword).text.toString().trim()
-
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            userViewModel.login(email, password)
+            presenter.onLoginClicked(
+                etEmail.text.toString().trim(),
+                etPassword.text.toString().trim()
+            )
         }
 
         tvCreateAccount.setOnClickListener {
-            startActivity(Intent(this, RegistrationActivity::class.java))
+            presenter.onCreateAccountClicked()
         }
+    }
+
+    // ── LoginContract.View implementation ─────────────────────────────────────
+
+    override fun showLoading() {
+        btnSignIn.isEnabled = false
+        btnSignIn.text = "Signing in…"
+    }
+
+    override fun hideLoading() {
+        btnSignIn.isEnabled = true
+        btnSignIn.text = "Sign In"
+    }
+
+    override fun showError(message: String) {
+        showToast(message)
+    }
+
+    override fun navigateToDashboard(user: UserEntity) {
+        navigateTo<DashboardActivity>(user.fullName, user.email)
+    }
+
+    override fun navigateToRegistration() {
+        navigateTo<RegistrationActivity>()
+    }
+
+    // ── Lifecycle ──────────────────────────────────────────────────────────────
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Critical: detach View so the Presenter doesn't leak the Activity.
+        presenter.detachView()
     }
 }

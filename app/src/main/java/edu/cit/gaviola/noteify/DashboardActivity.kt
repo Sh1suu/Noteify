@@ -1,7 +1,5 @@
-package edu.cit.gaviola.noteify
+package edu.cit.gaviola.noteify.dashboard
 
-import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.*
@@ -12,7 +10,14 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.navigation.NavigationView
-import edu.cit.gaviola.noteify.viewmodel.NoteViewModel
+import edu.cit.gaviola.noteify.R
+import edu.cit.gaviola.noteify.auth.login.MainActivity
+import edu.cit.gaviola.noteify.core.extensions.*
+import edu.cit.gaviola.noteify.notes.create.CreateNoteActivity
+import edu.cit.gaviola.noteify.notes.list.NotesActivity
+import edu.cit.gaviola.noteify.notes.viewmodel.NoteViewModel
+import edu.cit.gaviola.noteify.profile.ProfileActivity
+import edu.cit.gaviola.noteify.settings.SettingsActivity
 
 class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -23,8 +28,9 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        val userName = intent.getStringExtra("USER_NAME") ?: "Student"
-        val userEmail = intent.getStringExtra("USER_EMAIL") ?: ""
+        // Extension functions replace the boilerplate intent.getStringExtra calls
+        val userName = getUserName()
+        val userEmail = getUserEmail()
 
         noteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
 
@@ -49,7 +55,6 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         findViewById<TextView>(R.id.tvWelcomeUser).text = "Welcome, $userName!"
 
-        // Observe real note count from database
         if (userEmail.isNotEmpty()) {
             noteViewModel.getNoteCount(userEmail).observe(this) { count ->
                 findViewById<TextView>(R.id.tvTotalNotes).text = count.toString()
@@ -57,61 +62,37 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
 
         findViewById<Button>(R.id.btnQuickAdd).setOnClickListener {
-            val intent = Intent(this, CreateNoteActivity::class.java)
-            intent.putExtra("USER_NAME", userName)
-            intent.putExtra("USER_EMAIL", userEmail)
-            startActivity(intent)
+            // Extension function: navigateTo<T>(userName, userEmail)
+            navigateTo<CreateNoteActivity>(userName, userEmail)
         }
 
-        setupBottomNav("home", userName, userEmail)
+        setupBottomNav(userName, userEmail)
     }
 
-    private fun setupBottomNav(activeTab: String, userName: String, userEmail: String) {
-        val activeColor = Color.parseColor("#9b51e0")
-        val inactiveColor = Color.parseColor("#888888")
+    private fun setupBottomNav(userName: String, userEmail: String) {
+        // Extension function on LinearLayout eliminates the repeated color-filter boilerplate
+        val notesTab = findViewById<LinearLayout>(R.id.btnNavNotes)
+        val profileTab = findViewById<LinearLayout>(R.id.btnNavProfile)
 
-        findViewById<ImageView>(R.id.iconNotes).setColorFilter(inactiveColor)
-        findViewById<TextView>(R.id.labelNotes).setTextColor(inactiveColor)
-        findViewById<ImageView>(R.id.iconProfile).setColorFilter(inactiveColor)
-        findViewById<TextView>(R.id.labelProfile).setTextColor(inactiveColor)
+        notesTab.applyNavTabStyle(R.id.iconNotes, R.id.labelNotes, isActive = false)
+        profileTab.applyNavTabStyle(R.id.iconProfile, R.id.labelProfile, isActive = false)
 
-        findViewById<LinearLayout>(R.id.btnNavNotes).setOnClickListener {
-            val intent = Intent(this, NotesActivity::class.java)
-            intent.putExtra("USER_NAME", userName)
-            intent.putExtra("USER_EMAIL", userEmail)
-            startActivity(intent)
-        }
-
+        notesTab.setOnClickListener { navigateTo<NotesActivity>(userName, userEmail) }
         findViewById<LinearLayout>(R.id.btnNavHome).setOnClickListener {
-            Toast.makeText(this, "Already on Dashboard", Toast.LENGTH_SHORT).show()
+            showToast("Already on Dashboard")
         }
-
-        findViewById<LinearLayout>(R.id.btnNavProfile).setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            intent.putExtra("USER_NAME", userName)
-            intent.putExtra("USER_EMAIL", userEmail)
-            startActivity(intent)
-        }
+        profileTab.setOnClickListener { navigateTo<ProfileActivity>(userName, userEmail) }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val userName = intent.getStringExtra("USER_NAME") ?: "Student"
-        val userEmail = intent.getStringExtra("USER_EMAIL") ?: ""
+        val userName = getUserName()
+        val userEmail = getUserEmail()
 
         when (item.itemId) {
-            R.id.nav_dashboard -> Toast.makeText(this, "Already on Dashboard", Toast.LENGTH_SHORT).show()
-            R.id.nav_notes -> {
-                startActivity(Intent(this, NotesActivity::class.java)
-                    .putExtra("USER_NAME", userName)
-                    .putExtra("USER_EMAIL", userEmail))
-            }
-            R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
-            R.id.nav_logout -> {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
+            R.id.nav_dashboard -> showToast("Already on Dashboard")
+            R.id.nav_notes -> navigateTo<NotesActivity>(userName, userEmail)
+            R.id.nav_settings -> navigateTo<SettingsActivity>()
+            R.id.nav_logout -> navigateAndClearStack<MainActivity>()
         }
 
         drawerLayout.closeDrawer(GravityCompat.START)

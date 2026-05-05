@@ -1,17 +1,23 @@
-package edu.cit.gaviola.noteify
+package edu.cit.gaviola.noteify.notes.list
 
-import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
-import edu.cit.gaviola.noteify.database.NoteEntity
-import edu.cit.gaviola.noteify.viewmodel.NoteViewModel
+import edu.cit.gaviola.noteify.R
+import edu.cit.gaviola.noteify.core.extensions.*
+import edu.cit.gaviola.noteify.dashboard.DashboardActivity
+import edu.cit.gaviola.noteify.notes.create.CreateNoteActivity
+import edu.cit.gaviola.noteify.notes.data.NoteEntity
+import edu.cit.gaviola.noteify.notes.viewmodel.NoteViewModel
+import edu.cit.gaviola.noteify.profile.ProfileActivity
+import java.text.SimpleDateFormat
+import java.util.*
 
 class NotesActivity : AppCompatActivity() {
 
@@ -22,8 +28,9 @@ class NotesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
 
-        val userName = intent.getStringExtra("USER_NAME") ?: "Student"
-        val userEmail = intent.getStringExtra("USER_EMAIL") ?: ""
+        // Extension functions replace boilerplate intent.getStringExtra
+        val userName = getUserName()
+        val userEmail = getUserEmail()
 
         noteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
 
@@ -32,37 +39,31 @@ class NotesActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        // Container where notes will be dynamically added
         notesContainer = findViewById(R.id.notesContainer)
 
-        // Observe notes from database
         if (userEmail.isNotEmpty()) {
             noteViewModel.getNotesByUser(userEmail).observe(this) { notes ->
                 displayNotes(notes, userName, userEmail)
             }
         }
 
-        // Create New Note card click
         findViewById<CardView>(R.id.cardCreateNote).setOnClickListener {
-            val intent = Intent(this, CreateNoteActivity::class.java)
-            intent.putExtra("USER_NAME", userName)
-            intent.putExtra("USER_EMAIL", userEmail)
-            startActivity(intent)
+            navigateTo<CreateNoteActivity>(userName, userEmail)
         }
 
-        // Setup bottom nav
-        setupBottomNav("notes", userName, userEmail)
+        setupBottomNav(userName, userEmail)
     }
 
     private fun displayNotes(notes: List<NoteEntity>, userName: String, userEmail: String) {
         notesContainer.removeAllViews()
 
         if (notes.isEmpty()) {
-            val emptyText = TextView(this)
-            emptyText.text = "No notes yet. Tap '+' to create one!"
-            emptyText.textSize = 16f
-            emptyText.setTextColor(Color.parseColor("#888888"))
-            emptyText.setPadding(16, 32, 16, 32)
+            val emptyText = TextView(this).apply {
+                text = "No notes yet. Tap '+' to create one!"
+                textSize = 16f
+                setTextColor(Color.parseColor("#888888"))
+                setPadding(16, 32, 16, 32)
+            }
             notesContainer.addView(emptyText)
             return
         }
@@ -73,135 +74,115 @@ class NotesActivity : AppCompatActivity() {
 
         notes.forEachIndexed { index, note ->
             val colorIndex = index % colors.size
-            val cardLayout = LinearLayout(this)
-            cardLayout.orientation = LinearLayout.HORIZONTAL
-            val cardParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            cardParams.bottomMargin = 32
-            cardLayout.layoutParams = cardParams
-            cardLayout.setBackgroundColor(Color.WHITE)
 
-            // Left color bar
-            val colorBar = android.view.View(this)
-            val barParams = LinearLayout.LayoutParams(16, LinearLayout.LayoutParams.MATCH_PARENT)
-            colorBar.layoutParams = barParams
-            colorBar.setBackgroundColor(Color.parseColor(colors[colorIndex]))
-
-            // Content layout
-            val contentLayout = LinearLayout(this)
-            contentLayout.orientation = LinearLayout.VERTICAL
-            val contentParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            contentParams.setMargins(24, 24, 24, 24)
-            contentLayout.layoutParams = contentParams
-
-            // Subject tag
-            val subjectTag = TextView(this)
-            subjectTag.text = note.subject
-            subjectTag.textSize = 12f
-            subjectTag.setTextColor(Color.parseColor(textColors[colorIndex]))
-            subjectTag.setBackgroundColor(Color.parseColor(bgColors[colorIndex]))
-            subjectTag.setPadding(12, 6, 12, 6)
-
-            // Title
-            val titleText = TextView(this)
-            titleText.text = note.title
-            titleText.textSize = 18f
-            titleText.setTextColor(Color.BLACK)
-            titleText.setPadding(0, 8, 0, 0)
-            titleText.setTypeface(null, android.graphics.Typeface.BOLD)
-
-            // Content preview
-            val contentText = TextView(this)
-            contentText.text = if (note.content.length > 80)
-                note.content.substring(0, 80) + "..." else note.content
-            contentText.textSize = 14f
-            contentText.setTextColor(Color.parseColor("#888888"))
-            contentText.setPadding(0, 4, 0, 0)
-
-            // Timestamp
-            val timeText = TextView(this)
-            val sdf = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
-            timeText.text = sdf.format(java.util.Date(note.timestamp))
-            timeText.textSize = 12f
-            timeText.setTextColor(Color.parseColor("#AAAAAA"))
-            timeText.setPadding(0, 8, 0, 0)
-
-            // Delete button
-            val deleteBtn = Button(this)
-            deleteBtn.text = "Delete"
-            deleteBtn.textSize = 12f
-            deleteBtn.setTextColor(Color.parseColor("#FF4444"))
-            deleteBtn.setBackgroundColor(Color.TRANSPARENT)
-            deleteBtn.setPadding(0, 4, 0, 0)
-            deleteBtn.setOnClickListener {
-                AlertDialog.Builder(this)
-                    .setTitle("Delete Note")
-                    .setMessage("Are you sure you want to delete '${note.title}'?")
-                    .setPositiveButton("Delete") { _, _ ->
-                        noteViewModel.deleteNote(note)
-                    }
-                    .setNegativeButton("Cancel", null)
-                    .show()
+            val cardLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).also { it.bottomMargin = 32 }
+                setBackgroundColor(Color.WHITE)
             }
 
-            contentLayout.addView(subjectTag)
-            contentLayout.addView(titleText)
-            contentLayout.addView(contentText)
-            contentLayout.addView(timeText)
-            contentLayout.addView(deleteBtn)
+            val colorBar = android.view.View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(16, LinearLayout.LayoutParams.MATCH_PARENT)
+                setBackgroundColor(Color.parseColor(colors[colorIndex]))
+            }
+
+            val contentLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                ).also { it.setMargins(24, 24, 24, 24) }
+            }
+
+            val subjectTag = TextView(this).apply {
+                text = note.subject
+                textSize = 12f
+                setTextColor(Color.parseColor(textColors[colorIndex]))
+                setBackgroundColor(Color.parseColor(bgColors[colorIndex]))
+                setPadding(12, 6, 12, 6)
+            }
+
+            val titleText = TextView(this).apply {
+                text = note.title
+                textSize = 18f
+                setTextColor(Color.BLACK)
+                setPadding(0, 8, 0, 0)
+                setTypeface(null, Typeface.BOLD)
+            }
+
+            val contentText = TextView(this).apply {
+                // Extension function: truncate(80)
+                text = note.content.truncate(80)
+                textSize = 14f
+                setTextColor(Color.parseColor("#888888"))
+                setPadding(0, 4, 0, 0)
+            }
+
+            val timeText = TextView(this).apply {
+                val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                text = sdf.format(Date(note.timestamp))
+                textSize = 12f
+                setTextColor(Color.parseColor("#AAAAAA"))
+                setPadding(0, 8, 0, 0)
+            }
+
+            val deleteBtn = Button(this).apply {
+                text = "Delete"
+                textSize = 12f
+                setTextColor(Color.parseColor("#FF4444"))
+                setBackgroundColor(Color.TRANSPARENT)
+                setPadding(0, 4, 0, 0)
+                setOnClickListener {
+                    AlertDialog.Builder(this@NotesActivity)
+                        .setTitle("Delete Note")
+                        .setMessage("Are you sure you want to delete '${note.title}'?")
+                        .setPositiveButton("Delete") { _, _ -> noteViewModel.deleteNote(note) }
+                        .setNegativeButton("Cancel", null)
+                        .show()
+                }
+            }
+
+            contentLayout.apply {
+                addView(subjectTag)
+                addView(titleText)
+                addView(contentText)
+                addView(timeText)
+                addView(deleteBtn)
+            }
 
             cardLayout.addView(colorBar)
             cardLayout.addView(contentLayout)
 
-            // Wrap in CardView
-            val cardView = androidx.cardview.widget.CardView(this)
-            val cvParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            cvParams.bottomMargin = 32
-            cardView.layoutParams = cvParams
-            cardView.radius = 24f
-            cardView.cardElevation = 4f
-            cardView.addView(cardLayout)
+            val cardView = CardView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).also { it.bottomMargin = 32 }
+                radius = 24f
+                cardElevation = 4f
+                addView(cardLayout)
+            }
 
             notesContainer.addView(cardView)
         }
     }
 
-    private fun setupBottomNav(activeTab: String, userName: String, userEmail: String) {
-        val activeColor = Color.parseColor("#9b51e0")
-        val inactiveColor = Color.parseColor("#888888")
+    private fun setupBottomNav(userName: String, userEmail: String) {
+        val notesTab = findViewById<LinearLayout>(R.id.btnNavNotes)
+        val profileTab = findViewById<LinearLayout>(R.id.btnNavProfile)
 
-        findViewById<ImageView>(R.id.iconNotes).setColorFilter(
-            if (activeTab == "notes") activeColor else inactiveColor
-        )
-        findViewById<TextView>(R.id.labelNotes).setTextColor(
-            if (activeTab == "notes") activeColor else inactiveColor
-        )
-        findViewById<ImageView>(R.id.iconProfile).setColorFilter(
-            if (activeTab == "profile") activeColor else inactiveColor
-        )
-        findViewById<TextView>(R.id.labelProfile).setTextColor(
-            if (activeTab == "profile") activeColor else inactiveColor
-        )
+        // Extension function: applyNavTabStyle(iconId, labelId, isActive)
+        notesTab.applyNavTabStyle(R.id.iconNotes, R.id.labelNotes, isActive = true)
+        profileTab.applyNavTabStyle(R.id.iconProfile, R.id.labelProfile, isActive = false)
 
-        findViewById<LinearLayout>(R.id.btnNavNotes).setOnClickListener {}
-
+        notesTab.setOnClickListener { /* already here */ }
         findViewById<LinearLayout>(R.id.btnNavHome).setOnClickListener {
-            val intent = Intent(this, DashboardActivity::class.java)
-            intent.putExtra("USER_NAME", userName)
-            intent.putExtra("USER_EMAIL", userEmail)
-            startActivity(intent)
+            navigateTo<DashboardActivity>(userName, userEmail)
         }
-
-        findViewById<LinearLayout>(R.id.btnNavProfile).setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            intent.putExtra("USER_NAME", userName)
-            intent.putExtra("USER_EMAIL", userEmail)
-            startActivity(intent)
+        profileTab.setOnClickListener {
+            navigateTo<ProfileActivity>(userName, userEmail)
         }
     }
 }

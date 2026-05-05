@@ -1,4 +1,4 @@
-package edu.cit.gaviola.noteify.database
+package edu.cit.gaviola.noteify.notes.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

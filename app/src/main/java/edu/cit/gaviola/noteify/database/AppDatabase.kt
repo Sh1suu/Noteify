@@ -4,7 +4,19 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import edu.cit.gaviola.noteify.auth.data.UserDao
+import edu.cit.gaviola.noteify.auth.data.UserEntity
+import edu.cit.gaviola.noteify.notes.data.NoteDao
+import edu.cit.gaviola.noteify.notes.data.NoteEntity
 
+/**
+ * Central Room database.
+ *
+ * Kept in its own `database` package because it is a shared infrastructure
+ * concern used by both the `auth` and `notes` feature slices.
+ *
+ * The singleton is initialized once inside [NoteifyApp.onCreate].
+ */
 @Database(
     entities = [UserEntity::class, NoteEntity::class],
     version = 1,
@@ -21,13 +33,11 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
+                Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "AppDatabase"
-                ).build()
-                INSTANCE = instance
-                instance
+                ).build().also { INSTANCE = it }
             }
         }
     }

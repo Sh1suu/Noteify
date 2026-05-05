@@ -1,4 +1,4 @@
-package edu.cit.gaviola.noteify.viewmodel
+package edu.cit.gaviola.noteify.notes.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,13 +6,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import edu.cit.gaviola.noteify.database.AppDatabase
-import edu.cit.gaviola.noteify.database.NoteEntity
-import edu.cit.gaviola.noteify.repository.NoteRepository
+import edu.cit.gaviola.noteify.notes.data.NoteEntity
+import edu.cit.gaviola.noteify.notes.data.NoteRepository
 import kotlinx.coroutines.launch
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: NoteRepository
+
     private val _saveResult = MutableLiveData<Boolean>()
     val saveResult: LiveData<Boolean> = _saveResult
 
@@ -21,13 +22,11 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         repository = NoteRepository(noteDao)
     }
 
-    fun getNotesByUser(userEmail: String): LiveData<List<NoteEntity>> {
-        return repository.getNotesByUser(userEmail)
-    }
+    fun getNotesByUser(userEmail: String): LiveData<List<NoteEntity>> =
+        repository.getNotesByUser(userEmail)
 
-    fun getNoteCount(userEmail: String): LiveData<Int> {
-        return repository.getNoteCount(userEmail)
-    }
+    fun getNoteCount(userEmail: String): LiveData<Int> =
+        repository.getNoteCount(userEmail)
 
     fun saveNote(
         title: String,
@@ -51,14 +50,10 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun deleteNote(note: NoteEntity) {
-        viewModelScope.launch {
-            repository.deleteNote(note)
-        }
+        viewModelScope.launch { repository.deleteNote(note) }
     }
 
     fun updateNote(note: NoteEntity) {
-        viewModelScope.launch {
-            repository.updateNote(note)
-        }
+        viewModelScope.launch { repository.updateNote(note) }
     }
 }
