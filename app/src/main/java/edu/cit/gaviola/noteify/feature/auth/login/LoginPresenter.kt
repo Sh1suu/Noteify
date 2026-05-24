@@ -1,5 +1,6 @@
 package edu.cit.gaviola.noteify.feature.auth.login
 
+import edu.cit.gaviola.noteify.core.model.UserEntity
 import edu.cit.gaviola.noteify.feature.auth.data.UserRepository
 import edu.cit.gaviola.noteify.core.extensions.isValidEmail
 import edu.cit.gaviola.noteify.core.extensions.isValidPassword

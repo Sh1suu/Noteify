@@ -1,5 +1,7 @@
 package edu.cit.gaviola.noteify.feature.auth.login
 
+import edu.cit.gaviola.noteify.core.model.UserEntity
+
 /**
  * MVP Contract for the Login screen.
  */

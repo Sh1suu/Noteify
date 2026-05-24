@@ -2,6 +2,7 @@ package edu.cit.gaviola.noteify.feature.auth.data
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import edu.cit.gaviola.noteify.core.model.UserEntity
 
 @Dao
 interface UserDao {

@@ -1,5 +1,7 @@
 package edu.cit.gaviola.noteify.feature.auth.data
 
+import edu.cit.gaviola.noteify.core.model.UserEntity
+
 class UserRepository(private val userDao: UserDao) {
 
     suspend fun registerUser(fullName: String, email: String, password: String): Boolean {

@@ -4,9 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import edu.cit.gaviola.noteify.core.model.NoteEntity
+import edu.cit.gaviola.noteify.core.model.UserEntity
 import edu.cit.gaviola.noteify.feature.auth.data.UserDao
 import edu.cit.gaviola.noteify.feature.notes.data.NoteDao
-import edu.cit.gaviola.noteify.core.model.NoteEntity
 
 /**
  * Central Room database.

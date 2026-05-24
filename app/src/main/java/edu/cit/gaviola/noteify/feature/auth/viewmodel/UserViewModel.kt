@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import edu.cit.gaviola.noteify.core.model.UserEntity
 import edu.cit.gaviola.noteify.feature.auth.data.UserRepository
 import edu.cit.gaviola.noteify.core.data.AppDatabase
 import kotlinx.coroutines.launch

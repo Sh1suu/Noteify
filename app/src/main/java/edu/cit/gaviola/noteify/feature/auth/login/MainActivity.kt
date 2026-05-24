@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import edu.cit.gaviola.noteify.R
+import edu.cit.gaviola.noteify.core.model.UserEntity
 import edu.cit.gaviola.noteify.feature.auth.data.UserRepository
 import edu.cit.gaviola.noteify.feature.auth.register.RegistrationActivity
 import edu.cit.gaviola.noteify.core.extensions.navigateTo
