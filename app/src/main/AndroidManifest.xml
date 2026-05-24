@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".NoteifyApp"
+        android:name=".app.NoteifyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,15 +14,15 @@
         android:theme="@style/Theme.Noteify"
         tools:targetApi="31">
 
-        <activity android:name=".settings.SettingsActivity" />
-        <activity android:name=".profile.ProfileActivity" />
-        <activity android:name=".notes.create.CreateNoteActivity" />
-        <activity android:name=".notes.list.NotesActivity" />
-        <activity android:name=".dashboard.DashboardActivity" />
-        <activity android:name=".auth.register.RegistrationActivity" />
-        <activity android:name=".auth.login.LoginActivity" />
+        <activity android:name=".feature.settings.SettingsActivity" />
+        <activity android:name=".feature.profile.ProfileActivity" />
+        <activity android:name=".feature.notes.create.CreateNoteActivity" />
+        <activity android:name=".feature.notes.list.NotesActivity" />
+        <activity android:name=".feature.dashboard.DashboardActivity" />
+        <activity android:name=".feature.auth.register.RegistrationActivity" />
+
         <activity
-            android:name=".auth.login.MainActivity"
+            android:name=".feature.auth.login.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

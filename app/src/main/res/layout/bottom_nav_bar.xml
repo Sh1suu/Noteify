@@ -13,21 +13,25 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:focusable="true"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/iconNotes"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_notes"
-            android:id="@+id/iconNotes"/>
+            android:contentDescription="@string/nav_label_notes"/>
 
         <TextView
+            android:id="@+id/labelNotes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Notes"
+            android:text="@string/nav_label_notes"
             android:textSize="11sp"
-            android:layout_marginTop="2dp"
-            android:id="@+id/labelNotes"/>
+            android:layout_marginTop="3dp"/>
     </LinearLayout>
 
     <!-- Home Tab (Purple Circle) -->
@@ -37,19 +41,23 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:focusable="true"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless">
 
         <LinearLayout
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:gravity="center"
             android:background="@drawable/circle_purple">
 
             <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:src="@drawable/ic_home"
-                android:tint="#FFFFFF"/>
+                android:tint="#FFFFFF"
+                android:contentDescription="@string/nav_dashboard"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -60,21 +68,25 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:focusable="true"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless">
 
         <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/iconProfile"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@drawable/ic_profile"
-            android:id="@+id/iconProfile"/>
+            android:contentDescription="@string/nav_label_profile"/>
 
         <TextView
+            android:id="@+id/labelProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Profile"
+            android:text="@string/nav_label_profile"
             android:textSize="11sp"
-            android:layout_marginTop="2dp"
-            android:id="@+id/labelProfile"/>
+            android:layout_marginTop="3dp"/>
     </LinearLayout>
 
 </LinearLayout>

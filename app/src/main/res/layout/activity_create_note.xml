@@ -12,15 +12,17 @@
         android:layout_height="?attr/actionBarSize"
         android:background="#FFFFFF"
         android:elevation="4dp"
-        app:title="Create Note"
-        app:titleTextColor="#000000"
-        app:navigationIcon="@drawable/ic_back" />
+        app:title="@string/title_create_note"
+        app:titleTextColor="#111111"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationContentDescription="@string/cd_back_icon"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:clipToPadding="false">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -38,80 +40,83 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Create Note"
-                    android:textSize="22sp"
+                    android:text="@string/title_create_note"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#000000"
-                    android:layout_marginBottom="24dp" />
+                    android:textColor="#111111"
+                    android:layout_marginBottom="20dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Title"
-                    android:textColor="#333333"
-                    android:textSize="14sp"
+                    android:text="@string/label_title"
+                    android:textColor="#444444"
+                    android:textSize="13sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"/>
 
                 <EditText
                     android:id="@+id/etNoteTitle"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:background="#F2F2F7"
-                    android:hint="Enter note title"
+                    android:hint="@string/hint_note_title"
                     android:textColorHint="#AAAAAA"
-                    android:textColor="#000000"
-                    android:paddingHorizontal="16dp"
-                    android:textSize="16sp" />
+                    android:textColor="#111111"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:textSize="15sp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Subject"
-                    android:textColor="#333333"
-                    android:textSize="14sp"
+                    android:text="@string/label_subject"
+                    android:textColor="#444444"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"/>
 
                 <Spinner
                     android:id="@+id/spinnerSubject"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:background="#F2F2F7"
-                    android:paddingHorizontal="16dp" />
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Content"
-                    android:textColor="#333333"
-                    android:textSize="14sp"
+                    android:text="@string/label_content"
+                    android:textColor="#444444"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="8dp"/>
 
                 <EditText
                     android:id="@+id/etNoteContent"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:background="#F2F2F7"
-                    android:hint="Start typing your notes here...."
+                    android:hint="@string/hint_note_content"
                     android:textColorHint="#AAAAAA"
-                    android:textColor="#000000"
+                    android:textColor="#111111"
                     android:padding="16dp"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:gravity="top"
-                    android:inputType="textMultiLine" />
+                    android:inputType="textMultiLine"/>
 
                 <CheckBox
                     android:id="@+id/cbImportant"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Mark as important"
-                    android:textColor="#333333"
-                    android:buttonTint="#9b51e0" />
+                    android:text="@string/label_mark_important"
+                    android:textColor="#444444"
+                    android:textSize="14sp"
+                    android:buttonTint="#9b51e0"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -122,32 +127,34 @@
                     <Button
                         android:id="@+id/btnCancel"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
                         android:layout_marginEnd="8dp"
-                        android:text="Cancel"
+                        android:text="@string/btn_cancel"
                         android:textAllCaps="false"
-                        android:textColor="#333333"
+                        android:textColor="#555555"
+                        android:textSize="15sp"
                         android:background="#F2F2F7"
-                        app:backgroundTint="@null" />
+                        app:backgroundTint="@null"/>
 
                     <Button
                         android:id="@+id/btnSaveNote"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
                         android:layout_marginStart="8dp"
-                        android:text="Save Note"
+                        android:text="@string/btn_save_note"
                         android:textColor="#FFFFFF"
                         android:textAllCaps="false"
+                        android:textSize="15sp"
                         android:background="#9b51e0"
-                        app:backgroundTint="@null" />
+                        app:backgroundTint="@null"/>
                 </LinearLayout>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </ScrollView>
 
-    <include layout="@layout/bottom_nav_bar" />
+    <include layout="@layout/bottom_nav_bar"/>
 
 </LinearLayout>

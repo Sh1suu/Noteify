@@ -13,7 +13,6 @@
         android:orientation="vertical"
         android:background="#F2F2F7">
 
-        <!-- Toolbar with Logo -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -31,12 +30,13 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/noteifylogo"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginEnd="6dp"
+                    android:contentDescription="@string/cd_app_logo"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="oteify"
+                    android:text="@string/app_name"
                     android:textColor="#9b51e0"
                     android:textSize="20sp"
                     android:textStyle="bold"/>
@@ -47,7 +47,8 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,20 +56,27 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Create New Note Card -->
+                <!--
+                    Bug 2 fix: The ENTIRE card is the click target (id=cardCreateNote).
+                    The inner Button has been removed — tapping anywhere on the card creates a note.
+                -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cardCreateNote"
                     android:layout_width="match_parent"
-                    android:layout_height="160dp"
+                    android:layout_height="140dp"
                     android:layout_marginBottom="16dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:cardCornerRadius="16dp"
-                    app:cardBackgroundColor="#9b51e0">
+                    app:cardBackgroundColor="#9b51e0"
+                    app:cardElevation="4dp">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="20dp">
 
-                        <!-- Plus icon top left -->
                         <LinearLayout
                             android:id="@+id/plusBox"
                             android:layout_width="36dp"
@@ -87,47 +95,34 @@
                         </LinearLayout>
 
                         <TextView
-                            android:id="@+id/tvCreateNote"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Create New Note"
+                            android:text="@string/label_create_new_note"
                             android:textColor="#FFFFFF"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:layout_centerVertical="true" />
+                            android:layout_centerVertical="true"/>
 
-                        <Button
-                            android:id="@+id/btnQuickAdd"
+                        <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="40dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_tap_anywhere"
+                            android:textColor="#D4B0F5"
+                            android:textSize="12sp"
                             android:layout_alignParentBottom="true"
-                            android:layout_alignParentStart="true"
-                            android:text="Quick Add"
-                            android:textColor="#FFFFFF"
-                            android:textAllCaps="false"
-                            android:background="#B07AE8"
-                            android:textSize="14sp"
-                            android:paddingHorizontal="16dp"/>
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_back"
-                            android:tint="#FFFFFF"
-                            android:layout_alignParentBottom="true"
-                            android:layout_alignParentEnd="true"
-                            android:rotation="180"/>
+                            android:layout_alignParentStart="true"/>
 
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Total Notes Card -->
+                <!-- Bug 4 fix: tvTotalNotes is observed via LiveData — updates reactively -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     app:cardCornerRadius="16dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -145,16 +140,18 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Total Notes"
-                                android:textColor="#333333"
-                                android:textSize="16sp" />
+                                android:text="@string/label_total_notes"
+                                android:textColor="#555555"
+                                android:textSize="14sp"
+                                android:textAllCaps="true"
+                                android:letterSpacing="0.08"/>
 
-                            <!-- Layers icon top right -->
                             <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:src="@drawable/ic_notes"
-                                android:tint="#9b51e0"/>
+                                android:tint="#9b51e0"
+                                android:contentDescription="@string/label_total_notes"/>
                         </LinearLayout>
 
                         <TextView
@@ -162,38 +159,43 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="#000000"
-                            android:textSize="36sp"
+                            android:textColor="#111111"
+                            android:textSize="40sp"
                             android:textStyle="bold"
-                            android:layout_marginTop="4dp" />
+                            android:layout_marginTop="4dp"/>
 
-                        <!-- Progress bar -->
                         <ProgressBar
                             android:layout_width="match_parent"
                             android:layout_height="6dp"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="16dp"
                             style="?android:attr/progressBarStyleHorizontal"
                             android:progress="10"
                             android:progressTint="#9b51e0"
-                            android:progressBackgroundTint="#E0E0E0"/>
+                            android:progressBackgroundTint="#E8E8E8"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="10% of storage used"
-                            android:textColor="#888888"
+                            android:text="@string/label_storage_used"
+                            android:textColor="#AAAAAA"
                             android:textSize="12sp"
-                            android:layout_marginTop="4dp"/>
+                            android:layout_marginTop="6dp"/>
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Recent Activity Card -->
+                <!--
+                    Bug 3 fix: "Recent Activity" now shows actual note activity.
+                    recentActivityContainer is populated dynamically by DashboardActivity
+                    via noteViewModel.getRecentNotes() LiveData.
+                    The static "Welcome!" TextView has been removed.
+                -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="16dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -205,72 +207,33 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
 
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Recent Activity"
-                                android:textColor="#333333"
-                                android:textSize="16sp" />
+                                android:text="@string/label_recent_activity"
+                                android:textColor="#555555"
+                                android:textSize="14sp"
+                                android:textAllCaps="true"
+                                android:letterSpacing="0.08"/>
 
-                            <!-- Activity icon top right -->
                             <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:src="@drawable/ic_profile"
-                                android:tint="#9b51e0"/>
+                                android:tint="#9b51e0"
+                                android:contentDescription="@string/label_recent_activity"/>
                         </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tvWelcomeUser"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Welcome!"
-                            android:textColor="#000000"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="8dp" />
-
-                        <!-- +1 this week -->
+                        <!-- Dynamic container — rows injected by DashboardActivity -->
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:id="@+id/recentActivityContainer"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginTop="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="↑ "
-                                android:textColor="#4CAF50"
-                                android:textSize="14sp"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="+1 this week"
-                                android:textColor="#4CAF50"
-                                android:textSize="14sp"/>
-                        </LinearLayout>
-
-                        <!-- +1 bubble -->
-                        <LinearLayout
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/circle_purple"
-                            android:gravity="center"
-                            android:layout_marginTop="8dp">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="+1"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
+                            android:orientation="vertical"/>
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -278,7 +241,7 @@
             </LinearLayout>
         </ScrollView>
 
-        <include layout="@layout/bottom_nav_bar" />
+        <include layout="@layout/bottom_nav_bar"/>
 
     </LinearLayout>
 
@@ -290,6 +253,6 @@
         android:layout_gravity="start"
         android:background="#FFFFFF"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu" />
+        app:menu="@menu/nav_menu"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
