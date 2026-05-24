@@ -18,7 +18,9 @@
         <activity android:name=".feature.settings.SettingsActivity" />
         <activity android:name=".feature.profile.ProfileActivity" />
         <activity android:name=".feature.notes.create.CreateNoteActivity" />
+        <activity android:name=".feature.notes.edit.EditNoteActivity" />
         <activity android:name=".feature.notes.list.NotesActivity" />
+        <activity android:name=".feature.notes.trash.TrashActivity" />
         <activity android:name=".feature.dashboard.DashboardActivity" />
         <activity android:name=".feature.auth.register.RegistrationActivity" />
 

@@ -12,5 +12,7 @@ data class NoteEntity(
     val subject: String,
     val isImportant: Boolean = false,
     val timestamp: Long = System.currentTimeMillis(),
-    val userEmail: String
+    val userEmail: String,
+    /** Non-null means the note is in Trash. Value is the epoch ms when it was moved to trash. */
+    val deletedAt: Long? = null
 )

@@ -17,6 +17,9 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     private val _saveResult = MutableLiveData<Boolean>()
     val saveResult: LiveData<Boolean> = _saveResult
 
+    private val _updateResult = MutableLiveData<Boolean>()
+    val updateResult: LiveData<Boolean> = _updateResult
+
     init {
         val noteDao = AppDatabase.getDatabase(application).noteDao()
         repository = NoteRepository(noteDao)
@@ -30,6 +33,15 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getRecentNotes(userEmail: String): LiveData<List<NoteEntity>> =
         repository.getRecentNotes(userEmail)
+
+    fun getNotesByUserGroupedBySubject(userEmail: String): LiveData<List<NoteEntity>> =
+        repository.getNotesByUserGroupedBySubject(userEmail)
+
+    fun getTrashedNotes(userEmail: String): LiveData<List<NoteEntity>> =
+        repository.getTrashedNotes(userEmail)
+
+    suspend fun getNoteById(noteId: Int): NoteEntity? =
+        repository.getNoteById(noteId)
 
     fun saveNote(
         title: String,
@@ -52,11 +64,43 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun deleteNote(note: NoteEntity) {
-        viewModelScope.launch { repository.deleteNote(note) }
+    fun updateNote(
+        note: NoteEntity,
+        title: String,
+        content: String,
+        subject: String,
+        isImportant: Boolean
+    ) {
+        viewModelScope.launch {
+            repository.updateNote(
+                note.copy(
+                    title = title,
+                    content = content,
+                    subject = subject,
+                    isImportant = isImportant
+                )
+            )
+            _updateResult.postValue(true)
+        }
     }
 
-    fun updateNote(note: NoteEntity) {
-        viewModelScope.launch { repository.updateNote(note) }
+    fun softDeleteNote(noteId: Int) {
+        viewModelScope.launch { repository.softDelete(noteId) }
+    }
+
+    fun restoreNote(noteId: Int) {
+        viewModelScope.launch { repository.restoreNote(noteId) }
+    }
+
+    fun emptyTrash(userEmail: String) {
+        viewModelScope.launch { repository.emptyTrash(userEmail) }
+    }
+
+    fun purgeExpiredTrash() {
+        viewModelScope.launch { repository.purgeExpiredTrash() }
+    }
+
+    fun deleteNote(note: NoteEntity) {
+        viewModelScope.launch { repository.deleteNote(note) }
     }
 }

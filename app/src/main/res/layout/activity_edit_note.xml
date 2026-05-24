@@ -12,7 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="#FFFFFF"
         android:elevation="4dp"
-        app:title="@string/title_create_note"
+        app:title="@string/title_edit_note"
         app:titleTextColor="#111111"
         app:navigationIcon="@drawable/ic_back"
         app:navigationContentDescription="@string/cd_back_icon"/>
@@ -40,13 +40,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/title_create_note"
+                    android:text="@string/title_edit_note"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="#111111"
                     android:layout_marginBottom="20dp"/>
 
-                <!-- Title -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -68,7 +67,6 @@
                     android:paddingEnd="16dp"
                     android:textSize="15sp"/>
 
-                <!-- Subject — free-text EditText -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -92,7 +90,6 @@
                     android:textSize="15sp"
                     android:inputType="textCapWords"/>
 
-                <!-- Content -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -1,6 +1,8 @@
 package edu.cit.gaviola.noteify.feature.profile
 
 import android.os.Bundle
+import android.os.Environment
+import android.os.StatFs
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -31,6 +33,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var btnSaveProfile: Button
     private lateinit var viewModeGroup: LinearLayout
     private lateinit var editModeGroup: LinearLayout
+    private lateinit var tvStorageUsed: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,10 +57,10 @@ class ProfileActivity : AppCompatActivity() {
         btnSaveProfile  = findViewById(R.id.btnSaveProfile)
         viewModeGroup   = findViewById(R.id.viewModeGroup)
         editModeGroup   = findViewById(R.id.editModeGroup)
+        tvStorageUsed   = findViewById(R.id.tvStorageUsed)
 
         tvProfileName.text = userName
 
-        // Load saved values
         val savedCourse = prefs.getCourse(userEmail)
         val savedYear   = prefs.getYear(userEmail)
         tvProfileCourse.text = if (savedCourse.isNotEmpty()) savedCourse
@@ -65,14 +68,14 @@ class ProfileActivity : AppCompatActivity() {
         tvProfileYear.text   = if (savedYear.isNotEmpty()) savedYear
         else getString(R.string.text_placeholder_year_default)
 
-        // Live note count
         if (userEmail.isNotEmpty()) {
             noteViewModel.getNoteCount(userEmail).observe(this) { count ->
                 findViewById<TextView>(R.id.tvNotesCount).text = count.toString()
             }
         }
 
-        // Switch to edit mode
+        updateStorageDisplay()
+
         btnEditProfile.setOnClickListener {
             etCourse.setText(prefs.getCourse(userEmail).ifEmpty {
                 getString(R.string.text_placeholder_course_default)
@@ -84,7 +87,6 @@ class ProfileActivity : AppCompatActivity() {
             editModeGroup.visibility = View.VISIBLE
         }
 
-        // Save and return to view mode
         btnSaveProfile.setOnClickListener {
             val newCourse = etCourse.text.toString().trim()
             val newYear   = etYear.text.toString().trim()
@@ -110,6 +112,25 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         setupBottomNav(userName, userEmail)
+    }
+
+    private fun updateStorageDisplay() {
+        try {
+            val cacheBytes = (cacheDir.listFiles()?.sumOf { it.length() } ?: 0L) +
+                    (externalCacheDir?.listFiles()?.sumOf { it.length() } ?: 0L)
+            val filesBytes = (filesDir.listFiles()?.sumOf { it.length() } ?: 0L)
+            val appBytes = cacheBytes + filesBytes
+            tvStorageUsed.text = formatBytes(appBytes)
+        } catch (e: Exception) {
+            tvStorageUsed.text = getString(R.string.label_storage_unavailable)
+        }
+    }
+
+    private fun formatBytes(bytes: Long): String = when {
+        bytes >= 1_073_741_824L -> String.format("%.2f GB", bytes / 1_073_741_824.0)
+        bytes >= 1_048_576L     -> String.format("%.2f MB", bytes / 1_048_576.0)
+        bytes >= 1_024L         -> String.format("%.2f KB", bytes / 1_024.0)
+        else                    -> "$bytes B"
     }
 
     private fun setupBottomNav(userName: String, userEmail: String) {

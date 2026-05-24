@@ -18,8 +18,11 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="#FFFFFF"
-            android:elevation="4dp">
+            android:elevation="4dp"
+            app:title="">
 
+            <!-- Only logo + purple Noteify text. Title is empty so ActionBar
+                 doesn't inject the app label as a second "Noteify". -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -56,10 +59,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!--
-                    Bug 2 fix: The ENTIRE card is the click target (id=cardCreateNote).
-                    The inner Button has been removed — tapping anywhere on the card creates a note.
-                -->
+                <!-- Create New Note card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardCreateNote"
                     android:layout_width="match_parent"
@@ -115,7 +115,7 @@
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Bug 4 fix: tvTotalNotes is observed via LiveData — updates reactively -->
+                <!-- Total Notes card -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -165,18 +165,20 @@
                             android:layout_marginTop="4dp"/>
 
                         <ProgressBar
+                            android:id="@+id/progressStorageUsage"
                             android:layout_width="match_parent"
                             android:layout_height="6dp"
                             android:layout_marginTop="16dp"
                             style="?android:attr/progressBarStyleHorizontal"
-                            android:progress="10"
+                            android:progress="0"
                             android:progressTint="#9b51e0"
                             android:progressBackgroundTint="#E8E8E8"/>
 
                         <TextView
+                            android:id="@+id/tvStorageUsed"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/label_storage_used"
+                            android:text="@string/label_calculating"
                             android:textColor="#AAAAAA"
                             android:textSize="12sp"
                             android:layout_marginTop="6dp"/>
@@ -184,12 +186,7 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!--
-                    Bug 3 fix: "Recent Activity" now shows actual note activity.
-                    recentActivityContainer is populated dynamically by DashboardActivity
-                    via noteViewModel.getRecentNotes() LiveData.
-                    The static "Welcome!" TextView has been removed.
-                -->
+                <!-- Recent Activity card -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -228,7 +225,6 @@
                                 android:contentDescription="@string/label_recent_activity"/>
                         </LinearLayout>
 
-                        <!-- Dynamic container — rows injected by DashboardActivity -->
                         <LinearLayout
                             android:id="@+id/recentActivityContainer"
                             android:layout_width="match_parent"

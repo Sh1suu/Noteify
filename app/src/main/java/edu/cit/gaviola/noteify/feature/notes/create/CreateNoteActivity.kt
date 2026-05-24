@@ -30,14 +30,6 @@ class CreateNoteActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        val subjects = arrayOf(
-            "Select a subject", "Physics", "Calculus",
-            "History", "Computer Science", "English"
-        )
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, subjects)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        findViewById<Spinner>(R.id.spinnerSubject).adapter = adapter
-
         noteViewModel.saveResult.observe(this) { success ->
             if (success) {
                 showToast(getString(R.string.text_note_saved))
@@ -50,17 +42,17 @@ class CreateNoteActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnSaveNote).setOnClickListener {
             val title     = findViewById<EditText>(R.id.etNoteTitle).text.toString().trim()
+            val subject   = findViewById<EditText>(R.id.etSubject).text.toString().trim()
             val content   = findViewById<EditText>(R.id.etNoteContent).text.toString().trim()
-            val subject   = findViewById<Spinner>(R.id.spinnerSubject).selectedItem.toString()
             val important = findViewById<CheckBox>(R.id.cbImportant).isChecked
 
             when {
                 title.isEmpty() -> {
-                    showToast("Please enter a title")
+                    showToast(getString(R.string.error_empty_title))
                     return@setOnClickListener
                 }
-                subject == "Select a subject" -> {
-                    showToast("Please select a subject")
+                subject.isEmpty() -> {
+                    showToast(getString(R.string.error_empty_subject))
                     return@setOnClickListener
                 }
                 userEmail.isEmpty() -> {

@@ -2,6 +2,8 @@ package edu.cit.gaviola.noteify.feature.dashboard
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Environment
+import android.os.StatFs
 import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -18,6 +20,7 @@ import edu.cit.gaviola.noteify.feature.auth.login.MainActivity
 import edu.cit.gaviola.noteify.feature.notes.create.CreateNoteActivity
 import edu.cit.gaviola.noteify.core.model.NoteEntity
 import edu.cit.gaviola.noteify.feature.notes.list.NotesActivity
+import edu.cit.gaviola.noteify.feature.notes.trash.TrashActivity
 import edu.cit.gaviola.noteify.feature.notes.viewmodel.NoteViewModel
 import edu.cit.gaviola.noteify.feature.profile.ProfileActivity
 import edu.cit.gaviola.noteify.feature.settings.SettingsActivity
@@ -29,6 +32,8 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var noteViewModel: NoteViewModel
     private lateinit var recentActivityContainer: LinearLayout
+    private lateinit var tvStorageUsed: TextView
+    private lateinit var progressStorageUsage: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +46,9 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+        // Clear the title so the ActionBar doesn't inject the app label
+        // alongside our custom logo+text view inside the Toolbar.
+        supportActionBar?.title = ""
 
         drawerLayout = findViewById(R.id.drawerLayout)
         val navigationView = findViewById<NavigationView>(R.id.navigationView)
@@ -59,19 +67,20 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         headerView.findViewById<TextView>(R.id.tvNavEmail).text = userEmail
 
         recentActivityContainer = findViewById(R.id.recentActivityContainer)
+        tvStorageUsed = findViewById(R.id.tvStorageUsed)
+        progressStorageUsage = findViewById(R.id.progressStorageUsage)
 
-        // Bug 4: reactive counter — Room LiveData pushes updates on every insert/delete
         if (userEmail.isNotEmpty()) {
             noteViewModel.getNoteCount(userEmail).observe(this) { count ->
                 findViewById<TextView>(R.id.tvTotalNotes).text = count.toString()
             }
-            // Bug 3: real activity feed instead of static welcome message
             noteViewModel.getRecentNotes(userEmail).observe(this) { recentNotes ->
                 renderRecentActivity(recentNotes)
             }
         }
 
-        // Bug 2: entire card is clickable, no inner button needed
+        updateStorageDisplay()
+
         findViewById<CardView>(R.id.cardCreateNote).setOnClickListener {
             navigateTo<CreateNoteActivity>(userName, userEmail)
         }
@@ -79,17 +88,43 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         setupBottomNav(userName, userEmail)
     }
 
+    private fun updateStorageDisplay() {
+        try {
+            val cacheBytes = (cacheDir.listFiles()?.sumOf { it.length() } ?: 0L) +
+                    (externalCacheDir?.listFiles()?.sumOf { it.length() } ?: 0L)
+            val filesBytes = (filesDir.listFiles()?.sumOf { it.length() } ?: 0L)
+            val appBytes = cacheBytes + filesBytes
+
+            val statFs = StatFs(Environment.getDataDirectory().path)
+            val totalBytes = statFs.totalBytes
+            val usagePercent = if (totalBytes > 0)
+                ((appBytes.toFloat() / totalBytes.toFloat()) * 100).toInt().coerceAtMost(100)
+            else 0
+
+            tvStorageUsed.text = getString(R.string.label_storage_used_dynamic, formatBytes(appBytes))
+            progressStorageUsage.progress = usagePercent
+        } catch (e: Exception) {
+            tvStorageUsed.text = getString(R.string.label_storage_unavailable)
+        }
+    }
+
+    private fun formatBytes(bytes: Long): String = when {
+        bytes >= 1_073_741_824L -> String.format("%.2f GB", bytes / 1_073_741_824.0)
+        bytes >= 1_048_576L     -> String.format("%.2f MB", bytes / 1_048_576.0)
+        bytes >= 1_024L         -> String.format("%.2f KB", bytes / 1_024.0)
+        else                    -> "$bytes B"
+    }
+
     private fun renderRecentActivity(notes: List<NoteEntity>) {
         recentActivityContainer.removeAllViews()
 
         if (notes.isEmpty()) {
-            val emptyView = TextView(this).apply {
+            recentActivityContainer.addView(TextView(this).apply {
                 text = getString(R.string.text_no_activity)
                 textSize = 14f
                 setTextColor(Color.parseColor("#888888"))
                 setPadding(0, 8, 0, 8)
-            }
-            recentActivityContainer.addView(emptyView)
+            })
             return
         }
 
@@ -117,21 +152,19 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 )
             }
 
-            val titleView = TextView(this).apply {
+            detail.addView(TextView(this).apply {
                 text = getString(R.string.activity_note_created, note.title)
                 textSize = 14f
                 setTextColor(Color.parseColor("#222222"))
-            }
+            })
 
-            val timeView = TextView(this).apply {
+            detail.addView(TextView(this).apply {
                 text = sdf.format(Date(note.timestamp))
                 textSize = 12f
                 setTextColor(Color.parseColor("#AAAAAA"))
                 setPadding(0, 2, 0, 0)
-            }
+            })
 
-            detail.addView(titleView)
-            detail.addView(timeView)
             row.addView(dot)
             row.addView(detail)
             recentActivityContainer.addView(row)
@@ -159,6 +192,7 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         when (item.itemId) {
             R.id.nav_dashboard -> showToast(getString(R.string.text_already_on_dashboard))
             R.id.nav_notes     -> navigateTo<NotesActivity>(userName, userEmail)
+            R.id.nav_trash     -> navigateTo<TrashActivity>(userName, userEmail)
             R.id.nav_settings  -> navigateTo<SettingsActivity>()
             R.id.nav_logout    -> navigateAndClearStack<MainActivity>()
         }
