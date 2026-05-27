@@ -41,6 +41,8 @@
     <string name="error_note_not_found">Note not found</string>
     <string name="error_fill_course">Please enter your course</string>
     <string name="error_select_year">Please select your year level</string>
+    <string name="error_camera_permission">Camera permission is required to take a photo</string>
+    <string name="error_image_load">Could not load image. Please try again.</string>
 
     <!-- Dashboard -->
     <string name="label_total_notes">Total Notes</string>
@@ -113,6 +115,12 @@
     <string name="hint_year">Year 2</string>
     <string name="text_profile_saved">Profile updated!</string>
     <string name="btn_ok">OK</string>
+    <string name="dialog_title_change_photo">Change Profile Photo</string>
+    <string name="option_take_photo">Take Photo</string>
+    <string name="option_choose_gallery">Choose from Gallery</string>
+    <string name="text_photo_saved">Profile photo updated!</string>
+    <string name="cd_profile_picture">Profile picture</string>
+    <string name="cd_change_photo">Change photo</string>
 
     <!-- Settings -->
     <string name="title_settings">Settings</string>

@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-</PreferenceScreen>
+<paths>
+    <!--
+        Exposes getFilesDir() so the camera can write a temp JPEG there.
+        The camera intent needs a content:// URI pointing to a writable location.
+    -->
+    <files-path
+        name="profile_images"
+        path="profile_images/" />
+</paths>

@@ -13,27 +13,33 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.google.android.material.navigation.NavigationView
 import edu.cit.gaviola.noteify.R
 import edu.cit.gaviola.noteify.core.extensions.*
+import edu.cit.gaviola.noteify.core.model.NoteEntity
+import edu.cit.gaviola.noteify.core.preferences.AppPreferences
 import edu.cit.gaviola.noteify.feature.auth.login.MainActivity
 import edu.cit.gaviola.noteify.feature.notes.create.CreateNoteActivity
-import edu.cit.gaviola.noteify.core.model.NoteEntity
 import edu.cit.gaviola.noteify.feature.notes.list.NotesActivity
 import edu.cit.gaviola.noteify.feature.notes.trash.TrashActivity
 import edu.cit.gaviola.noteify.feature.notes.viewmodel.NoteViewModel
 import edu.cit.gaviola.noteify.feature.profile.ProfileActivity
 import edu.cit.gaviola.noteify.feature.settings.SettingsActivity
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
     private lateinit var noteViewModel: NoteViewModel
     private lateinit var recentActivityContainer: LinearLayout
     private lateinit var tvStorageUsed: TextView
     private lateinit var progressStorageUsage: ProgressBar
+    private lateinit var prefs: AppPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,16 +48,15 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         val userName  = getUserName()
         val userEmail = getUserEmail()
 
+        prefs         = AppPreferences(this)
         noteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        // Clear the title so the ActionBar doesn't inject the app label
-        // alongside our custom logo+text view inside the Toolbar.
         supportActionBar?.title = ""
 
-        drawerLayout = findViewById(R.id.drawerLayout)
-        val navigationView = findViewById<NavigationView>(R.id.navigationView)
+        drawerLayout   = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.navigationView)
         navigationView.setNavigationItemSelectedListener(this)
 
         val toggle = ActionBarDrawerToggle(
@@ -62,20 +67,21 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        // Populate nav header static text
         val headerView = navigationView.getHeaderView(0)
-        headerView.findViewById<TextView>(R.id.tvNavName).text = userName
+        headerView.findViewById<TextView>(R.id.tvNavName).text  = userName
         headerView.findViewById<TextView>(R.id.tvNavEmail).text = userEmail
 
         recentActivityContainer = findViewById(R.id.recentActivityContainer)
-        tvStorageUsed = findViewById(R.id.tvStorageUsed)
-        progressStorageUsage = findViewById(R.id.progressStorageUsage)
+        tvStorageUsed           = findViewById(R.id.tvStorageUsed)
+        progressStorageUsage    = findViewById(R.id.progressStorageUsage)
 
         if (userEmail.isNotEmpty()) {
             noteViewModel.getNoteCount(userEmail).observe(this) { count ->
                 findViewById<TextView>(R.id.tvTotalNotes).text = count.toString()
             }
-            noteViewModel.getRecentNotes(userEmail).observe(this) { recentNotes ->
-                renderRecentActivity(recentNotes)
+            noteViewModel.getRecentNotes(userEmail).observe(this) { notes ->
+                renderRecentActivity(notes)
             }
         }
 
@@ -88,20 +94,50 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         setupBottomNav(userName, userEmail)
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Refresh nav-header avatar in case the user changed it in ProfileActivity
+        val userEmail  = getUserEmail()
+        val headerView = navigationView.getHeaderView(0)
+        val ivNavAvatar = headerView.findViewById<ImageView>(R.id.ivNavAvatar)
+        loadNavAvatar(ivNavAvatar, userEmail)
+    }
+
+    /**
+     * Loads the user's saved profile picture (or default) into the nav-header ImageView.
+     */
+    private fun loadNavAvatar(target: ImageView, userEmail: String) {
+        val savedPath = prefs.getProfileImagePath(userEmail)
+        val file = if (savedPath.isNotEmpty()) File(savedPath) else null
+
+        if (file != null && file.exists()) {
+            target.load(file) {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_default_avatar)
+                error(R.drawable.ic_default_avatar)
+            }
+        } else {
+            target.load(R.drawable.ic_default_avatar) {
+                transformations(CircleCropTransformation())
+            }
+        }
+    }
+
     private fun updateStorageDisplay() {
         try {
             val cacheBytes = (cacheDir.listFiles()?.sumOf { it.length() } ?: 0L) +
                     (externalCacheDir?.listFiles()?.sumOf { it.length() } ?: 0L)
             val filesBytes = (filesDir.listFiles()?.sumOf { it.length() } ?: 0L)
-            val appBytes = cacheBytes + filesBytes
+            val appBytes   = cacheBytes + filesBytes
 
-            val statFs = StatFs(Environment.getDataDirectory().path)
-            val totalBytes = statFs.totalBytes
+            val statFs       = StatFs(Environment.getDataDirectory().path)
+            val totalBytes   = statFs.totalBytes
             val usagePercent = if (totalBytes > 0)
                 ((appBytes.toFloat() / totalBytes.toFloat()) * 100).toInt().coerceAtMost(100)
             else 0
 
-            tvStorageUsed.text = getString(R.string.label_storage_used_dynamic, formatBytes(appBytes))
+            tvStorageUsed.text        = getString(R.string.label_storage_used_dynamic, formatBytes(appBytes))
             progressStorageUsage.progress = usagePercent
         } catch (e: Exception) {
             tvStorageUsed.text = getString(R.string.label_storage_unavailable)
@@ -178,11 +214,11 @@ class DashboardActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         notesTab.applyNavTabStyle(R.id.iconNotes, R.id.labelNotes, isActive = false)
         profileTab.applyNavTabStyle(R.id.iconProfile, R.id.labelProfile, isActive = false)
 
-        notesTab.setOnClickListener { navigateTo<NotesActivity>(userName, userEmail) }
+        notesTab.setOnClickListener   { navigateTo<NotesActivity>(userName, userEmail) }
+        profileTab.setOnClickListener { navigateTo<ProfileActivity>(userName, userEmail) }
         findViewById<LinearLayout>(R.id.btnNavHome).setOnClickListener {
             showToast(getString(R.string.text_already_on_dashboard))
         }
-        profileTab.setOnClickListener { navigateTo<ProfileActivity>(userName, userEmail) }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
